@@ -10,15 +10,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Debug — show what files are actually copied
-RUN echo "=== /app contents ===" && ls -la /app
-RUN echo "=== /app/env contents ===" && ls -la /app/env || echo "env folder MISSING"
-
-# Force path
 RUN echo "/app" > /usr/local/lib/python3.8/site-packages/hostalgrid.pth
 
 ENV API_BASE_URL="https://api.openai.com/v1"
 ENV MODEL_NAME="gpt-4o-mini"
 ENV HF_TOKEN=""
+ENV PYTHONPATH=/app
 
-CMD ["python", "inference.py"]
+EXPOSE 7860
+
+# Run both inference + web server
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
